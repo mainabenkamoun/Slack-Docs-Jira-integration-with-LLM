@@ -4,7 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-#the sage documentation page uses JS to load html, so I use selenium scraper instead of beautiful soup. 
+#the sage documentation page uses JS to load html, so I used selenium scraper instead of beautiful soup. 
 
 def show_results(titles, list_url):
     parsed_result_list = list(zip(titles,list_url))
@@ -27,8 +27,6 @@ def parse_documentation(search_expression):
     for link in links:
         href = link.get_attribute("href") 
         list_url.append(href)
-
-    #print(list_url)
 
     driver.quit()
 

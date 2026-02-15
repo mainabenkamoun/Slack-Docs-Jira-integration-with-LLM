@@ -18,7 +18,7 @@ def pick_most_relevant_result(text_original_message: str, parsed_result_list: li
 
     client = Anthropic(api_key=api_key)
 
-    # ---- Normalize input ----
+    # I use the same logic for the LLM to pick the most relevant result, be it in a list of scraped articles, or a list of jira issues.
     normalized = []
 
     for item in parsed_result_list:
@@ -72,7 +72,7 @@ Respond with ONLY a JSON object in this exact format:
 
     response_text = message.content[0].text.strip()
 
-    # ---- Robust JSON parsing ----
+    # JSON parsing
     try:
         result = json.loads(response_text)
     except json.JSONDecodeError:
