@@ -3,7 +3,7 @@ from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from sage_scraper import * 
 from llm_logic import * 
-from Jira_agent import * 
+from Jira_issues import * 
 
 
 app = App(
@@ -17,7 +17,7 @@ def handle_reaction_added(event, client):
     channel_id = event["item"]["channel"]
     ts = event["item"]["ts"]
 
-    # Fetch the original message if not already stored
+    # I Fetch the original message if not already stored
     if ts not in message_store:
         text_original_message = client.conversations_history(
             channel=channel_id,
@@ -29,7 +29,7 @@ def handle_reaction_added(event, client):
     else:
         text_original_message = message_store[ts]
 
-    # Step 1: User reacts with :raccoon:
+    # Step 1: User reacts with :search-doc emoji: this calls the scraper in sage_scraper.py, then feeds the scrapes articles to an LLM that picks the most relevant.
     if reaction == "search-doc":
         parsed_result_list = parse_documentation(text_original_message)
         search_result = pick_most_relevant_result(text_original_message, parsed_result_list)
@@ -43,7 +43,7 @@ def handle_reaction_added(event, client):
             )
         )
 
-    # Step 2: User reacts with :jira:
+    # Step 2: User reacts with :jira-search:, the LLM searchs for the most relevant jira issue related to this question
     elif reaction == "jira-search":
         list_jira_tickets = fetch_jira_tickets()
         selected_jira = pick_most_relevant_result(text_original_message, list_jira_tickets)
@@ -54,6 +54,7 @@ def handle_reaction_added(event, client):
             text=f"I found this related Jira ticket for your issue:\n{selected_jira}. If this is not relevant, react with :jira-new: to create a new issue. "
         )
     
+# Step 2: User reacts with :jira-new:, the LLM creates a JIRA issue with enriched summary and description.
     elif reaction == "jira-new":
 
         structured = generate_structured_issue(text_original_message)
